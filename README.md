@@ -1,14 +1,8 @@
 # utl-creating-an-output-dataset-from-proc-tabulate-that-mimics-the-printed-data
 Creating an output dataset from proc tabulate that mimics the printed data 
-   %let pgm=utl-creating-an-output-dataset-from-proc-tabulate-that-mimics-the-printed-data;
+    %let pgm=utl-creating-an-output-dataset-from-proc-tabulate-that-mimics-the-printed-data;
 
     Creating an output dataset from proc tabulate that mimics the printed data
-    
-    github
-    https://tinyurl.com/yu9cnk48
-    https://github.com/rogerjdeangelis/utl-creating-an-output-dataset-from-proc-tabulate-that-mimics-the-printed-data
-
-    https://communities.sas.com/t5/New-SAS-User/Cross-tabulation/m-p/788044
 
     Problem:
        I want a SAS dataset from proc tabulate not printer output
@@ -54,13 +48,14 @@ Creating an output dataset from proc tabulate that mimics the printed data
     -------------------------------------------------------------------------------------------------------------------------------
 
 
-      Two Solutions (These solutions produce datasets instead og printed output)
+      Three Solutions (These solutions produce datasets instead og printed output)
 
            1. Proc corresp
            2, Proc tabulate (first proposed by
                  Bartosz Jablonski
                  yabwon@gmail.com )
-              I need to clean it up?
+                I need to clean it up?
+           3. Proc Corresp without do_over (demostrates the power of normalization and SQL
     /*                   _
     (_)_ __  _ __  _   _| |_
     | | `_ \| `_ \| | | | __|
@@ -68,6 +63,9 @@ Creating an output dataset from proc tabulate that mimics the printed data
     |_|_| |_| .__/ \__,_|\__|
             |_|
     */
+
+    proc datasets lib=work kill;
+    run;quit;
 
     data have;
         input  (ID Sex Year Region Group Condition) (: $8.);
@@ -93,8 +91,9 @@ Creating an output dataset from proc tabulate that mimics the printed data
     19 0 2018 West 1 0
     20 0 2018 West 2 0
     ;;;;
-    run;quit
+    run;quit;
 
+    /*
 
     Up to 40 obs WORK.HAVE total obs=20 03JAN2022:16:59:05
 
@@ -121,13 +120,12 @@ Creating an output dataset from proc tabulate that mimics the printed data
      19    19     0     2018    West        1          0
      20    20     0     2018    West        2          0
 
-    /*           _               _
+                 _               _
       ___  _   _| |_ _ __  _   _| |_    ___ ___  _ __ _ __ ___  ___ _ __
      / _ \| | | | __| `_ \| | | | __|  / __/ _ \| `__| `__/ _ \/ __| `_ \
     | (_) | |_| | |_| |_) | |_| | |_  | (_| (_) | |  | | |  __/\__ \ |_) |
      \___/ \__,_|\__| .__/ \__,_|\__|  \___\___/|_|  |_|  \___||___/ .__/
                     |_|                                            |_|
-    */
 
     Up to 40 obs WORK.WANT_COR total obs=11 03JAN2022:18:44:59
 
@@ -145,13 +143,12 @@ Creating an output dataset from proc tabulate that mimics the printed data
      10    CONDITION    0        0 (0.00)      0 (0.00)      2 (66.67)    8 (100.00)    10 (50.00)
      11    CONDITION    1        6 (100.00)    3 (100.00)    1 (33.33)    0 (0.00)      10 (50.00)
 
-    /*           _               _     _        _
+                 _               _     _        _
       ___  _   _| |_ _ __  _   _| |_  | |_ __ _| |__
      / _ \| | | | __| `_ \| | | | __| | __/ _` | `_ \
     | (_) | |_| | |_| |_) | |_| | |_  | || (_| | |_) |
      \___/ \__,_|\__| .__/ \__,_|\__|  \__\__,_|_.__/
                     |_|
-    */
 
     * Enhanced Image of Tabulate printed output, merge count and percent;
     Up to 40 obs WORK.WANT_TAB total obs=15 03JAN2022:18:45:48
@@ -173,8 +170,29 @@ Creating an output dataset from proc tabulate that mimics the printed data
      13    Condition
      14    0            . (.)         . (.)         2 (66.67)    8 (100.00)    10 (50.00)
      15    1            6 (100.00)    3 (100.00)    1 (33.33)    . (.)         10 (50.00)
+                 _               _               __          _
+      ___  _   _| |_ _ __  _   _| |_  __      __/ /__     __| | ___     _____   _____ _ __
+     / _ \| | | | __| `_ \| | | | __| \ \ /\ / / / _ \   / _` |/ _ \   / _ \ \ / / _ \ `__|
+    | (_) | |_| | |_| |_) | |_| | |_   \ V  V / / (_) | | (_| | (_) | | (_) \ V /  __/ |
+     \___/ \__,_|\__| .__/ \__,_|\__|   \_/\_/_/ \___/   \__,_|\___/___\___/ \_/ \___|_|
+                    |_|                                           |_____|
 
-    /*
+    p to 40 obs WORK.NPCTS total obs=11 04JAN2022:08:26:53
+
+    bs    _name_       label     npct2015      npct2016     npct2017      npct2018      npctSum
+
+     1    Condition    0        0 (0.00)      0 (0.00)      2 (66.67)    8 (100.00)    10 (50.00)
+     2    Condition    1        6 (100.00)    3 (100.00)    1 (33.33)    0 (0.00)      10 (50.00)
+     3    Group        1        2 (33.33)     1 (33.33)     1 (33.33)    3 (37.50)     7 (35.00)
+     4    Group        2        2 (33.33)     1 (33.33)     1 (33.33)    3 (37.50)     7 (35.00)
+     5    Group        3        2 (33.33)     1 (33.33)     1 (33.33)    2 (25.00)     6 (30.00)
+     6    Region       East     1 (16.67)     2 (66.67)     0 (0.00)     0 (0.00)      3 (15.00)
+     7    Region       North    2 (33.33)     1 (33.33)     1 (33.33)    2 (25.00)     6 (30.00)
+     8    Region       South    3 (50.00)     0 (0.00)      2 (66.67)    4 (50.00)     9 (45.00)
+     9    Region       West     0 (0.00)      0 (0.00)      0 (0.00)     2 (25.00)     2 (10.00)
+    10    Sex          0        3 (50.00)     1 (33.33)     2 (66.67)    3 (37.50)     9 (45.00)
+    11    Sex          1        3 (50.00)     2 (66.67)     1 (33.33)    5 (62.50)     11 (55.00)
+
      _ __  _ __ ___   ___ ___  ___ ___    ___ ___  _ __ _ __ ___  ___ _ __
     | `_ \| `__/ _ \ / __/ _ \/ __/ __|  / __/ _ \| `__| `__/ _ \/ __| `_ \
     | |_) | | | (_) | (_|  __/\__ \__ \ | (_| (_) | |  | | |  __/\__ \ |_) |
@@ -224,7 +242,6 @@ Creating an output dataset from proc tabulate that mimics the printed data
          ));
     ods select all;
 
-
     /*                                   _        _
      _ __  _ __ ___   ___ ___  ___ ___  | |_ __ _| |__
     | `_ \| `__/ _ \ / __/ _ \/ __/ __| | __/ _` | `_ \
@@ -236,7 +253,7 @@ Creating an output dataset from proc tabulate that mimics the printed data
 
     options ls=255;
     %utl_odstab(setup);
-    proc tabulate data=have;
+    proc tabulate data=have out=tst;
        title "|type| n2015| p2015| n2016| p2016 | n2017| p2017 | n2018| p2018 | nAll| pall |";
        class Sex Year Region Group Condition;
        table
@@ -286,8 +303,75 @@ Creating an output dataset from proc tabulate that mimics the printed data
            end;
            drop i;
     run;quit;
+    /*         __          _
+    __      __/ /__     __| | ___     _____   _____ _ __
+    \ \ /\ / / / _ \   / _` |/ _ \   / _ \ \ / / _ \ `__|
+     \ V  V / / (_) | | (_| | (_) | | (_) \ V /  __/ |
+      \_/\_/_/ \___/   \__,_|\___/___\___/ \_/ \___|_|
+                                |_____|
+    */
 
-    /*              _
+    %untranspose(data=have, out=havNrm, by=id year, delimiter=_, var=Sex Region Group Condition) ;
+
+    /*
+    Up to 40 obs WORK.WANT total obs=160 04JAN2022:07:20:59
+
+    Obs    ID    Year    _name_       _value_
+
+      1    1     2015    Sex           1
+      2    1     2015    Region        North
+      3    1     2015    Group         1
+      4    1     2015    Condition     1
+      5    1     2019    Sex           1
+      6    1     2019    Region        North
+      7    1     2019    Group         1
+      8    1     2019    Condition     1
+      9    2     2015    Sex           0
+     10    2     2015    Region        North
+     11    2     2015    Group         2
+     12    2     2015    Condition     1
+     13    2     2019    Sex           0
+    */
+
+    proc sort data=havNrm out=havSrt noequals;
+      by _name_;
+    run;quit;
+
+    ods output observed=cnt_all(rename=(_2015-_2018=cnt2015-cnt2018 sum=tot) where=(label ne 'Sum'));
+    ods output colprofilespct=pct_all(rename=(_2015-_2018=pct2015-pct2018));
+    proc corresp data=havSrt dim=1 observed print=both all cross=both;
+       by _name_;
+       tables _value_, year;
+    run;quit;
+
+    proc sql;
+       create
+          table jyn as
+       select
+          l.label as label length=16
+         ,l.*
+         ,r.*
+         ,rr.totAll
+         ,100*l.tot/rr.totAll as pctSum
+       from
+          cnt_all as l
+             left join pct_all as r on l.label=r.label and l._name_ = r._name_
+             left join (select _name_, sum(tot) as totAll from cnt_All group by _name_) as rr on l._name_ = rr._name_
+       order
+         by _name_, label
+    ;quit;
+
+    data npcts(keep=_name_ label npct:);
+      retain _name_ label;
+      set jyn;
+      array pcts      pct2015-pct2018 pctSum;
+      array cnts      cnt2015-cnt2018 tot ;
+      array npct  $16 npct2015-npct2018 npctSum ;
+      do i=1 to dim(npct);
+         npct[i]=cats(put(cnts[i],4.),' (',put(pcts[i],6.2),')');
+      end;
+    run;
+
       ___ _ __   __| |
      / _ \ `_ \ / _` |
     |  __/ | | | (_| |
