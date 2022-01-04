@@ -3,6 +3,12 @@ Creating an output dataset from proc tabulate that mimics the printed data
    %let pgm=utl-creating-an-output-dataset-from-proc-tabulate-that-mimics-the-printed-data;
 
     Creating an output dataset from proc tabulate that mimics the printed data
+    
+    github
+    https://tinyurl.com/yu9cnk48
+    https://github.com/rogerjdeangelis/utl-creating-an-output-dataset-from-proc-tabulate-that-mimics-the-printed-data
+
+    https://communities.sas.com/t5/New-SAS-User/Cross-tabulation/m-p/788044
 
     Problem:
        I want a SAS dataset from proc tabulate not printer output
